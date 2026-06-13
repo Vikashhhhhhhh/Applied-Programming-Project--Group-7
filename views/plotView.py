@@ -231,3 +231,118 @@ class VisPyPlotWidget(QWidget):
             y=(-self.y_scale - label_space, self.y_scale),
             margin=0.02,
         )
+
+
+class MultiChannelPlotWidget(QWidget):
+    """
+    VisPy widget for the "Plot All Channels" view.
+
+    All channels are drawn in the same rolling 10-second window. Each channel
+    is shifted up by a constant vertical offset so the traces do not overlap:
+
+        Channel 1   ----- signal      (bottom)
+        Channel 2      ----- signal
+        ...
+        Channel 32                    (top)
+
+    This gives a quick overview of activity across the whole recording.
+    """
+
+    def __init__(self, num_channels=32, visible_duration_seconds=10.0, y_scale=300.0):
+        super().__init__()
+
+        self.num_channels = num_channels
+        self.visible_duration_seconds = visible_duration_seconds
+        self.y_scale = y_scale
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+
+        self.canvas = scene.SceneCanvas(
+            keys="interactive",
+            show=False,
+            bgcolor="white",
+            size=(1000, 600),
+        )
+
+        self.view = self.canvas.central_widget.add_view()
+        self.view.camera = "panzoom"
+
+        # One line visual per channel.
+        self.channel_lines = []
+        for _ in range(self.num_channels):
+            line = scene.Line(
+                pos=np.array([[0.0, 0.0], [0.0, 0.0]], dtype=float),
+                color=(0.1, 0.3, 0.8, 1.0),
+                parent=self.view.scene,
+                width=1,
+            )
+            self.channel_lines.append(line)
+
+        # Channel index labels on the left side.
+        self.channel_labels = []
+        for index in range(self.num_channels):
+            text = scene.Text(
+                text=f"{index + 1}",
+                color="black",
+                font_size=8,
+                anchor_x="right",
+                anchor_y="center",
+                parent=self.view.scene,
+            )
+            self.channel_labels.append(text)
+
+        layout.addWidget(self.canvas.native)
+
+        self._update_labels()
+        self._update_camera()
+
+    def channel_offset(self):
+        """Vertical distance between two neighbouring channels."""
+        return 2.2 * self.y_scale
+
+    def set_y_scale(self, y_scale):
+        self.y_scale = float(y_scale)
+        self._update_labels()
+        self._update_camera()
+
+    def set_signal_time(self, signal_time_seconds):
+        """Kept for interface symmetry with the single-channel widget."""
+        return
+
+    def update_plot(self, x, y_all):
+        x = np.asarray(x, dtype=float)
+        y_all = np.asarray(y_all, dtype=float)
+
+        if x.size < 2 or y_all.shape[1] < 2:
+            return
+
+        newest_time = x[-1]
+        display_x = x - newest_time + self.visible_duration_seconds
+
+        keep = (display_x >= 0.0) & (display_x <= self.visible_duration_seconds)
+        display_x = display_x[keep]
+        if display_x.size < 2:
+            return
+
+        offset = self.channel_offset()
+        for index, line in enumerate(self.channel_lines):
+            if index >= y_all.shape[0]:
+                continue
+            y = y_all[index, keep] + index * offset
+            line.set_data(pos=np.column_stack((display_x, y)))
+
+    def _update_labels(self):
+        offset = self.channel_offset()
+        for index, text in enumerate(self.channel_labels):
+            text.pos = (-0.2, index * offset)
+
+    def _update_camera(self):
+        offset = self.channel_offset()
+        top = (self.num_channels - 1) * offset + self.y_scale
+        self.view.camera.set_range(
+            x=(0.0, self.visible_duration_seconds),
+            y=(-self.y_scale, top),
+            margin=0.02,
+        )

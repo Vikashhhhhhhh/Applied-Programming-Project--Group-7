@@ -7,10 +7,17 @@ from pathlib import Path
 
 
 class EMGTCPServer:
-    def __init__(self, host='localhost', port=12345,
-                 pkl_file='C:/Users/vikas/Documents/Applied-Programming-2026/recording.pkl'):
+    def __init__(self, host='localhost', port=12345, pkl_file=None):
         self.host = host
         self.port = port
+        if pkl_file is None:
+            # Look for recording.pkl next to the project folder, then inside it.
+            project_root = Path(__file__).resolve().parent.parent
+            candidates = [
+                project_root.parent / 'recording.pkl',
+                project_root / 'recording.pkl',
+            ]
+            pkl_file = next((p for p in candidates if p.exists()), candidates[0])
         self.pkl_file = pkl_file
         self.server_socket = None
         self.clients = []

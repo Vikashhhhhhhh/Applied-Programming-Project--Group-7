@@ -1,5 +1,5 @@
 pyside6
 vispy
 matplotlib
-numpy
+numpy<2
 scipy

@@ -49,14 +49,41 @@ class TcpClientModel:
         self.byte_buffer = bytearray()
         self.data_buffer = np.empty((self.channels, 0), dtype=self.dtype)
 
+        # Full (un-trimmed) history of every received sample.
+        # This is used for the offline Matplotlib inspection after streaming
+        # has stopped. The rolling data_buffer above only keeps the visible
+        # 10-second window for the live plot.
+        self.full_data_buffer = np.empty((self.channels, 0), dtype=self.dtype)
+
         # Counts how many samples were received in total.
         # This is used to calculate the signal time.
         self.total_samples_received = 0
 
-    def connect(self):
-        """Connect to the TCP server."""
+    def set_selected_channel(self, channel_index):
+        """Select which channel (0-based) the live single-channel plot shows."""
+        if 0 <= channel_index < self.channels:
+            self.selected_channel = channel_index
+
+    def reset_buffers(self):
+        """Clear all buffers so a new streaming session starts cleanly."""
+        self.byte_buffer = bytearray()
+        self.data_buffer = np.empty((self.channels, 0), dtype=self.dtype)
+        self.full_data_buffer = np.empty((self.channels, 0), dtype=self.dtype)
+        self.total_samples_received = 0
+
+    def connect(self, port=None):
+        """Connect to the TCP server.
+
+        An optional port can be supplied (e.g. from the GUI port input field).
+        Buffers are reset so each new connection starts from a clean state.
+        """
         if self.is_connected:
             return
+
+        if port is not None:
+            self.port = int(port)
+
+        self.reset_buffers()
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
@@ -124,6 +151,12 @@ class TcpClientModel:
             axis=1,
         )
 
+        # Keep the complete history for offline inspection.
+        self.full_data_buffer = np.concatenate(
+            (self.full_data_buffer, new_data),
+            axis=1,
+        )
+
         # Count all received samples.
         # new_data.shape[1] is the number of new samples per channel.
         self.total_samples_received += new_data.shape[1]
@@ -148,6 +181,33 @@ class TcpClientModel:
         number_of_samples = y.shape[0]
         x = np.arange(number_of_samples) / self.sampling_rate
 
+        return x, y
+
+    def get_all_window(self):
+        """
+        Return x and y data for all channels in the rolling window.
+
+        x is a relative time axis. y is a 2D array of shape
+        (channels, samples) used by the "Plot All Channels" view.
+        """
+        y = self.data_buffer
+        number_of_samples = y.shape[1]
+        x = np.arange(number_of_samples) / self.sampling_rate
+        return x, y
+
+    def has_full_history(self):
+        """Return True if any data was received for offline inspection."""
+        return self.full_data_buffer.shape[1] >= 2
+
+    def get_full_history(self):
+        """
+        Return the complete received signal for offline inspection.
+
+        Returns an absolute time axis and the full (channels, samples) array.
+        """
+        y = self.full_data_buffer
+        number_of_samples = y.shape[1]
+        x = np.arange(number_of_samples) / self.sampling_rate
         return x, y
 
     def get_signal_time_seconds(self):
