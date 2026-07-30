@@ -146,6 +146,7 @@ class MainView(QMainWindow):
         self.view_model.status_updated.connect(self.update_status)
         self.view_model.signal_time_updated.connect(self.update_signal_time)
         self.view_model.signal_time_updated.connect(self.plot_widget.set_signal_time)
+        self.view_model.signal_time_updated.connect(self.multi_plot_widget.set_signal_time)
         self.view_model.connection_changed.connect(self.on_connection_changed)
 
     # ----- user actions --------------------------------------------------
