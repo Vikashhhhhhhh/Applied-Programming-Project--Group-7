@@ -34,7 +34,7 @@ class VisPyPlotWidget(QWidget):
 
         # Gap kept between the plotted signal and the x-axis/time labels below it,
         # so a peak reaching +/- y_scale never visually overlaps the axis text.
-        self.axis_margin_ratio = 0.3
+        self.axis_margin_ratio = 0.6
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -160,6 +160,10 @@ class VisPyPlotWidget(QWidget):
 
         if display_x.size < 2:
             return
+
+        # Clip to +/- y_scale so a peak larger than the chosen scale never
+        # reaches the axis/labels drawn below the plot area.
+        y = np.clip(y, -self.y_scale, self.y_scale)
 
         pos = np.column_stack((display_x, y))
         self.signal_line.set_data(pos=pos)
@@ -305,7 +309,7 @@ class MultiChannelPlotWidget(QWidget):
 
         # Gap kept between the bottom channel's trace and the x-axis/time labels
         # below it, so a peak reaching +/- y_scale never overlaps the axis text.
-        self.axis_margin_ratio = 0.3
+        self.axis_margin_ratio = 0.6
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -422,7 +426,10 @@ class MultiChannelPlotWidget(QWidget):
         for index, line in enumerate(self.channel_lines):
             if index >= y_all.shape[0]:
                 continue
-            y = y_all[index, keep] + index * offset
+            # Clip each channel to its own +/- y_scale band before offsetting,
+            # so a peak never bleeds into a neighbouring channel or the axis.
+            channel_y = np.clip(y_all[index, keep], -self.y_scale, self.y_scale)
+            y = channel_y + index * offset
             line.set_data(pos=np.column_stack((display_x, y)))
 
     def _update_labels(self):
