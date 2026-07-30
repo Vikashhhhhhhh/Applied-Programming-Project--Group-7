@@ -32,6 +32,10 @@ class VisPyPlotWidget(QWidget):
         self.current_signal_time = 0.0
         self.time_tick_step = 5.0
 
+        # Gap kept between the plotted signal and the x-axis/time labels below it,
+        # so a peak reaching +/- y_scale never visually overlaps the axis text.
+        self.axis_margin_ratio = 0.3
+
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
@@ -162,20 +166,24 @@ class VisPyPlotWidget(QWidget):
 
         self._update_camera()
 
+    def _axis_bottom(self):
+        """Y position of the x-axis line, kept below the plotted signal range."""
+        return -self.y_scale - self.axis_margin_ratio * self.y_scale
+
     def _update_axes(self):
-        y_min = -self.y_scale
+        axis_bottom = self._axis_bottom()
         y_max = self.y_scale
 
         self.x_axis_line.set_data(
             pos=np.array(
-                [[0.0, y_min], [self.visible_duration_seconds, y_min]],
+                [[0.0, axis_bottom], [self.visible_duration_seconds, axis_bottom]],
                 dtype=float,
             )
         )
 
         self.y_axis_line.set_data(
             pos=np.array(
-                [[0.0, y_min], [0.0, y_max]],
+                [[0.0, axis_bottom], [0.0, y_max]],
                 dtype=float,
             )
         )
@@ -217,10 +225,10 @@ class VisPyPlotWidget(QWidget):
             visible range = 2 ... 12
             labels 5 and 10 are visible and moving left
         """
-        y_min = -self.y_scale
+        axis_bottom = self._axis_bottom()
 
         tick_height = 0.04 * (2 * self.y_scale)
-        label_y = y_min - 0.06 * (2 * self.y_scale)
+        label_y = axis_bottom - 0.06 * (2 * self.y_scale)
 
         visible_start_time = self.current_signal_time - self.visible_duration_seconds
         visible_end_time = self.current_signal_time
@@ -242,8 +250,8 @@ class VisPyPlotWidget(QWidget):
 
         tick_positions = []
         for _, display_x in tick_values:
-            tick_positions.append([display_x, y_min])
-            tick_positions.append([display_x, y_min + tick_height])
+            tick_positions.append([display_x, axis_bottom])
+            tick_positions.append([display_x, axis_bottom + tick_height])
 
         if tick_positions:
             self.tick_line.set_data(pos=np.asarray(tick_positions, dtype=float))
@@ -265,7 +273,7 @@ class VisPyPlotWidget(QWidget):
 
         self.view.camera.set_range(
             x=(-left_margin, self.visible_duration_seconds),
-            y=(-self.y_scale - label_space, self.y_scale),
+            y=(self._axis_bottom() - label_space, self.y_scale),
             margin=0.02,
         )
 
@@ -294,6 +302,10 @@ class MultiChannelPlotWidget(QWidget):
 
         self.current_signal_time = 0.0
         self.time_tick_step = 5.0
+
+        # Gap kept between the bottom channel's trace and the x-axis/time labels
+        # below it, so a peak reaching +/- y_scale never overlaps the axis text.
+        self.axis_margin_ratio = 0.3
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -375,6 +387,10 @@ class MultiChannelPlotWidget(QWidget):
         """Vertical distance between two neighbouring channels."""
         return 2.2 * self.y_scale
 
+    def _axis_bottom(self):
+        """Y position of the x-axis line, kept below the bottom channel's trace."""
+        return -self.y_scale - self.axis_margin_ratio * self.y_scale
+
     def set_y_scale(self, y_scale):
         self.y_scale = float(y_scale)
         self._update_labels()
@@ -415,20 +431,20 @@ class MultiChannelPlotWidget(QWidget):
             text.pos = (-0.2, index * offset)
 
     def _update_x_axis(self):
-        y_min = -self.y_scale
+        axis_bottom = self._axis_bottom()
         self.x_axis_line.set_data(
             pos=np.array(
-                [[0.0, y_min], [self.visible_duration_seconds, y_min]],
+                [[0.0, axis_bottom], [self.visible_duration_seconds, axis_bottom]],
                 dtype=float,
             )
         )
 
     def _update_time_ticks(self):
         """Moving tick labels on the x-axis, matching the single-channel widget."""
-        y_min = -self.y_scale
+        axis_bottom = self._axis_bottom()
 
         tick_height = 0.02 * (2 * self.y_scale)
-        label_y = y_min - 0.03 * (2 * self.y_scale)
+        label_y = axis_bottom - 0.03 * (2 * self.y_scale)
 
         visible_start_time = self.current_signal_time - self.visible_duration_seconds
         visible_end_time = self.current_signal_time
@@ -448,8 +464,8 @@ class MultiChannelPlotWidget(QWidget):
 
         tick_positions = []
         for _, display_x in tick_values:
-            tick_positions.append([display_x, y_min])
-            tick_positions.append([display_x, y_min + tick_height])
+            tick_positions.append([display_x, axis_bottom])
+            tick_positions.append([display_x, axis_bottom + tick_height])
 
         if tick_positions:
             self.tick_line.set_data(pos=np.asarray(tick_positions, dtype=float))
@@ -471,6 +487,6 @@ class MultiChannelPlotWidget(QWidget):
         top = (self.num_channels - 1) * offset + self.y_scale
         self.view.camera.set_range(
             x=(0.0, self.visible_duration_seconds),
-            y=(-self.y_scale - label_space, top),
+            y=(self._axis_bottom() - label_space, top),
             margin=0.02,
         )
