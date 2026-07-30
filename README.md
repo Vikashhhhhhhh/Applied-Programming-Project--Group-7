@@ -11,13 +11,11 @@ provided in Exercise 5. It is built with an **MVVM** architecture.
 
 ## Team members and responsibilities
 
-| Member | Responsibility |
-|--------|----------------|
-| _Member 1_ | TCP / backend (model, buffering, server integration) |
-| _Member 2_ | Visualization / frontend (VisPy live plots, GUI) |
-| _Member 3_ | Documentation / integration (offline view, README, testing) |
-
-> Please replace the member names above with the actual team members.
+| Member     |
+|------------|
+| Vikash     | 
+| Praveen    |
+| Aayushmaan |
 
 ---
 

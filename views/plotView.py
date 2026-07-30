@@ -13,6 +13,7 @@ class VisPyPlotWidget(QWidget):
     - one x-axis line at the lower y-limit
     - one y-axis line at x = 0
     - moving time labels on the x-axis
+    - numeric amplitude tick labels on the y-axis
 
     The visible plot window is always 10 seconds wide.
 
@@ -22,7 +23,7 @@ class VisPyPlotWidget(QWidget):
     during the first seconds.
     """
 
-    def __init__(self, visible_duration_seconds=10.0, y_scale=300.0):
+    def __init__(self, visible_duration_seconds=10.0, y_scale=2000.0):
         super().__init__()
 
         self.visible_duration_seconds = visible_duration_seconds
@@ -92,16 +93,40 @@ class VisPyPlotWidget(QWidget):
             )
             self.time_texts.append(text)
 
+        self.y_tick_texts = []
+        for _ in range(5):
+            text = scene.Text(
+                text="",
+                color="black",
+                font_size=9,
+                anchor_x="right",
+                anchor_y="center",
+                parent=self.view.scene,
+            )
+            self.y_tick_texts.append(text)
+
+        self.y_axis_title = scene.Text(
+            text="Amplitude",
+            color="black",
+            font_size=10,
+            anchor_x="center",
+            anchor_y="bottom",
+            rotation=90,
+            parent=self.view.scene,
+        )
+
         layout.addWidget(self.canvas.native)
 
         self._update_axes()
         self._update_time_ticks()
+        self._update_y_ticks()
         self._update_camera()
 
     def set_y_scale(self, y_scale):
         self.y_scale = float(y_scale)
         self._update_axes()
         self._update_time_ticks()
+        self._update_y_ticks()
         self._update_camera()
 
     def set_signal_time(self, signal_time_seconds):
@@ -154,6 +179,17 @@ class VisPyPlotWidget(QWidget):
                 dtype=float,
             )
         )
+
+    def _update_y_ticks(self):
+        """Show numeric amplitude tick labels along the y-axis."""
+        tick_values = [-self.y_scale, -self.y_scale / 2, 0.0, self.y_scale / 2, self.y_scale]
+        label_x = -0.02 * self.visible_duration_seconds
+
+        for text, value in zip(self.y_tick_texts, tick_values):
+            text.text = f"{value:.0f}"
+            text.pos = (label_x, value)
+
+        self.y_axis_title.pos = (-0.12 * self.visible_duration_seconds, 0.0)
 
     def _update_time_ticks(self):
         """
@@ -225,9 +261,10 @@ class VisPyPlotWidget(QWidget):
 
     def _update_camera(self):
         label_space = 0.16 * (2 * self.y_scale)
+        left_margin = 0.16 * self.visible_duration_seconds
 
         self.view.camera.set_range(
-            x=(0.0, self.visible_duration_seconds),
+            x=(-left_margin, self.visible_duration_seconds),
             y=(-self.y_scale - label_space, self.y_scale),
             margin=0.02,
         )
@@ -248,7 +285,7 @@ class MultiChannelPlotWidget(QWidget):
     This gives a quick overview of activity across the whole recording.
     """
 
-    def __init__(self, num_channels=32, visible_duration_seconds=10.0, y_scale=300.0):
+    def __init__(self, num_channels=32, visible_duration_seconds=10.0, y_scale=2000.0):
         super().__init__()
 
         self.num_channels = num_channels

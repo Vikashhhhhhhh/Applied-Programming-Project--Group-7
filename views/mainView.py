@@ -88,7 +88,7 @@ class MainView(QMainWindow):
         self.y_scale_label = QLabel("Y scale")
         self.y_scale_input = QDoubleSpinBox()
         self.y_scale_input.setRange(0.01, 100000.0)
-        self.y_scale_input.setValue(300.0)
+        self.y_scale_input.setValue(2000.0)
         self.y_scale_input.setSingleStep(50.0)
         self.y_scale_input.setDecimals(2)
         control_layout.addWidget(self.y_scale_label)
