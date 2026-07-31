@@ -13,7 +13,7 @@ provided in Exercise 5. It is built with an **MVVM** architecture.
 
 | Member | GitHub | Responsibilities |
 | :--- | :--- | :--- |
-| Aung Naing (aung.naing@fau.de) | [@Vikashhhhhhhhh](https://github.com/Vikashhhhhhhhh) | Documentation/integration |
+| Aung Naing (aung.naing@fau.de) | [@Vikashhhhhhhhh](https://github.com/Vikashhhhhhhh) | Documentation/integration |
 | Praveen Kumar Jadi (praveen.kumar.jadi@fau.de)| [@pravinjadi](https://github.com/pravinjadi) | Visualization/frontend |
 | Aayushmaan Tiwari (aayushmaan.tiwari@fau.de)| [@tiwariaayushmaan](https://github.com/tiwariaayushmaan) | TCP/backend |
 
@@ -166,5 +166,5 @@ crashing, including:
 | :--- | :--- |
 | Server not running / wrong port | Connection refused, displaying "Could not connect to server..."|
 | Connection lost while streaming | Server closes the stream, displaying " Connection lost...", the loaded plot can be observed in online/offline plot. |
-| No data available for offline plotting | Displays " no data available for offline plotting" |
+| No data available for offline plotting | Displays " No data available for offline plotting" |
 | Channel and signal-mode inputs constrained to valid values | Input validation enforces selection of allowed parameters |
