@@ -41,8 +41,8 @@ provided in Exercise 5. It is built with an **MVVM** architecture.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/samurai2407/AP_finalproject-team25.git
-cd AP_finalproject-team25
+git clone https://github.com/Vikashhhhhhhh/Applied-Programming-Project--Group-7.git
+cd Applied-Programming-Project--Group-7
 ```
 
 ### 2. Create and activate a virtual environment
@@ -72,19 +72,8 @@ Keep this terminal open — you will need the environment active for all subsequ
 
 ---
 
-### 3. Add the data file
 
-Copy `recording.pkl` from Exercise 5 and paste it into the root of the
-cloned folder, next to `tcp_server.py`:
-
-```
-AP_finalproject-team25/
-├── recording.pkl     ← paste here
-├── tcp_server.py
-└── main.py
-```
-
-### 4. Install dependencies
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
