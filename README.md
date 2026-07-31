@@ -38,49 +38,78 @@ provided in Exercise 5. It is built with an **MVVM** architecture.
 
 ## Installation
 
-Python 3.10 to 3.12 is recommended (tested on Python 3.10, 3.11, and 3.12).
+### 1. Clone the repository
 
+```bash
+git clone https://github.com/samurai2407/AP_finalproject-team25.git
+cd AP_finalproject-team25
+```
+
+### 2. Create and activate a virtual environment
+
+Using a virtual environment is strongly recommended to avoid dependency conflicts.
+
+**macOS / Linux**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+**Windows (Command Prompt)**
+```cmd
+python -m venv venv
+venv\Scripts\activate
+```
+
+**Windows (PowerShell)**
 ```powershell
+python -m venv venv
+venv\Scripts\Activate.ps1
+```
+
+You should see `(venv)` at the start of your terminal prompt once activated.
+Keep this terminal open — you will need the environment active for all subsequent steps.
+
+---
+
+### 3. Add the data file
+
+Copy `recording.pkl` from Exercise 5 and paste it into the root of the
+cloned folder, next to `tcp_server.py`:
+
+```
+AP_finalproject-team25/
+├── recording.pkl     ← paste here
+├── tcp_server.py
+└── main.py
+```
+
+### 4. Install dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-Dependencies (`requirements.txt`):
-
-```
-numpy>=1.26,<3
-scipy>=1.12,<2
-PySide6>=6.7,<7
-vispy>=0.14,<1
-matplotlib>=3.8,<4
-```
-
 ---
 
-## Running the application
+## Running the Application
 
-The application needs the TCP server running first. Testing requires two separate terminal windows (one for the server and one for the client GUI). 
+### Step 1 — Start the server
 
-**1. Start the server** (provided in `TCP_Server/`) (Terminal 1):
+In one terminal, run:
 
-```powershell
-python TCP_Server/main.py
-```
-Obtain recording.pkl from the course repository root (NsquaredLab/Applied-Programming-2026). It is data, not code, and is gitignored — it will not be in this repo.
-
-The server loads `recording.pkl`. It looks for the file automatically next to
-or inside the project folder. If your file is elsewhere, pass the path:
-
-```python
-EMGTCPServer(pkl_file="path/to/recording.pkl")
+```bash
+python tcp_server.py
 ```
 
-**2. Start the client application (Terminal 2):**
+### Step 2 — Start the client
 
-```powershell
+In a second terminal, run:
+
+```bash
 python main.py
 ```
 
----
 
 ## How to use the GUI
 
