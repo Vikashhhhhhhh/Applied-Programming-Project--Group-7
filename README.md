@@ -88,7 +88,7 @@ pip install -r requirements.txt
 In one terminal, run:
 
 ```bash
-python tcp_server.py
+python TCP_Server/main.py
 ```
 
 ### Step 2 — Start the client
