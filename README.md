@@ -11,11 +11,11 @@ provided in Exercise 5. It is built with an **MVVM** architecture.
 
 ## Team members and responsibilities
 
-| Member     |
-|------------|
-| Vikash     | 
-| Praveen    |
-| Aayushmaan |
+| Member | GitHub | Responsibilities |
+| :--- | :--- | :--- |
+| Aung Naing (aung.naing@fau.de) | [@Vikashhhhhhhhh](https://github.com/Vikashhhhhhhhh) | Documentation/integration |
+| Praveen Kumar Jadi (praveen.kumar.jadi@fau.de)| [@pravinjadi](https://github.com/pravinjadi) | Visualization/frontend |
+| Aayushmaan Tiwari (aayushmaan.tiwari@fau.de)| [@tiwariaayushmaan](https://github.com/tiwariaayushmaan) | TCP/backend |
 
 ---
 
@@ -162,7 +162,9 @@ Applied-Programming-Project--Group-7/
 The application reports problems via the GUI status message instead of
 crashing, including:
 
-- server not running / wrong port (connection refused)
-- connection lost while streaming (server closes the stream)
-- no data available for offline plotting
-- channel and signal-mode inputs constrained to valid values
+| Error | Consequence |
+| :--- | :--- |
+| Server not running / wrong port | Connection refused, displaying "Could not connect to server..."|
+| Connection lost while streaming | Server closes the stream, displaying " Connection lost...", the loaded plot can be observed in online/offline plot. |
+| No data available for offline plotting | Displays " no data available for offline plotting" |
+| Channel and signal-mode inputs constrained to valid values | Input validation enforces selection of allowed parameters |
