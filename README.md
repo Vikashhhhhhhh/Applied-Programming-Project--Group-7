@@ -38,7 +38,7 @@ provided in Exercise 5. It is built with an **MVVM** architecture.
 
 ## Installation
 
-A clean Python 3.11 environment is recommended.
+Python 3.10 to 3.12 is recommended (tested on Python 3.10, 3.11, and 3.12).
 
 ```powershell
 pip install -r requirements.txt
@@ -47,27 +47,25 @@ pip install -r requirements.txt
 Dependencies (`requirements.txt`):
 
 ```
-pyside6
-vispy
-matplotlib
-numpy<2
-scipy
+numpy>=1.26,<3
+scipy>=1.12,<2
+PySide6>=6.7,<7
+vispy>=0.14,<1
+matplotlib>=3.8,<4
 ```
-
-> NumPy is pinned to `<2` because the pre-built `matplotlib`/`vispy` wheels are
-> compiled against NumPy 1.x. NumPy 2.x causes an import-time crash.
 
 ---
 
 ## Running the application
 
-The application needs the TCP server running first.
+The application needs the TCP server running first. Testing requires two separate terminal windows (one for the server and one for the client GUI). 
 
-**1. Start the server** (provided in `TCP_Server/`):
+**1. Start the server** (provided in `TCP_Server/`) (Terminal 1):
 
 ```powershell
 python TCP_Server/main.py
 ```
+Obtain recording.pkl from the course repository root (NsquaredLab/Applied-Programming-2026). It is data, not code, and is gitignored — it will not be in this repo.
 
 The server loads `recording.pkl`. It looks for the file automatically next to
 or inside the project folder. If your file is elsewhere, pass the path:
@@ -76,7 +74,7 @@ or inside the project folder. If your file is elsewhere, pass the path:
 EMGTCPServer(pkl_file="path/to/recording.pkl")
 ```
 
-**2. Start the client application:**
+**2. Start the client application (Terminal 2):**
 
 ```powershell
 python main.py
