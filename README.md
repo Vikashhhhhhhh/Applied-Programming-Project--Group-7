@@ -173,6 +173,16 @@ Applied-Programming-Project--Group-7/
 
 ---
 
+
+
+Dependencies (`requirements.txt`):
+
+numpy>=1.26,<3
+scipy>=1.12,<2
+PySide6>=6.7,<7
+vispy>=0.14,<1
+matplotlib>=3.8,<4
+
 ## Error handling
 
 The application reports problems via the GUI status message instead of
