@@ -38,7 +38,7 @@ provided in Exercise 5. It is built with an **MVVM** architecture.
 
 ## Installation
 
-A clean Python 3.11 environment is recommended.
+A clean Python 3.11+ environment is recommended.
 
 ```powershell
 pip install -r requirements.txt
@@ -50,12 +50,15 @@ Dependencies (`requirements.txt`):
 pyside6
 vispy
 matplotlib
-numpy<2
+numpy>=1.26,<3
 scipy
 ```
 
-> NumPy is pinned to `<2` because the pre-built `matplotlib`/`vispy` wheels are
-> compiled against NumPy 1.x. NumPy 2.x causes an import-time crash.
+> NumPy is pinned to `>=1.26,<3` for compatibility: NumPy 1.26.x supports
+> Python 3.9-3.12, while Python 3.13+ requires NumPy 2.x (NumPy 1.x has no
+> wheels for 3.13). This range lets pip pick the right version automatically
+> for whichever Python version is installed, and the `<3` ceiling avoids an
+> untested future major release.
 
 ---
 
